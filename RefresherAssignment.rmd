@@ -1,0 +1,106 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+
+# R and RStudio Refresher assignment
+## Darren Smith
+### BAN 502
+
+### Task 1
+```{r install packages and load}
+# install.packages("tidyverse")
+library(tidyverse)
+library(readr)
+```
+
+
+### Task 2
+```{r Create new dataset}
+diamondata = diamonds
+nrow(diamondata)
+ncol(diamondata)
+```
+The number of  rows in the dataset is  `r nrow(diamondata)`. The number of columns is `r ncol(diamondata)`.  
+
+
+### Task 3
+```{r plot carat vs price}
+diamondata %>%
+  ggplot(aes(x=carat, y=price)) +
+geom_point() +
+  geom_smooth()  # to easiy see the trend 
+```
+
+There appears to be an upward  linear relationship between carats and price.  Specifically when the carats go from 0 to 2.5 the price goes up in a almost a straight line.  When the cararats are 2.5 and over they taper off an the price while it goes up does not go up as nearly as fast. i used the smooth line to show me how the trend looked.  
+
+
+
+### Task 4
+```{r plot carat vs price by cut}
+diamondata %>%
+  ggplot(aes(x=carat, y=price, color = cut)) +
+geom_point() +
+  geom_smooth() # to easiy see the trend by cut
+```
+
+By adding cut to the mix you can still see that there is a relationship that is pretty easy to follow.  As carats go up, price goes up as we saw above .  By adding cut though we can see that ideal cuts price grows faster through 2.5 carats but then falls off greatly beyond that, while fair cuts price grows the slowest to 2.5 but then continues to grow with the additional carats.  This is a good example of some of the hidden nuances of graphs.  I used the smooth line to show me how the trend looks.  
+
+
+### Task 5
+```{r facet wrap to see if there is a diffference based on color in addition to carat price and cut}
+diamondata %>%
+  ggplot(aes(x=carat, y=price, color = cut)) +
+geom_point() +
+  geom_smooth()+ 
+  facet_wrap(~color)
+```
+
+Facet wrapping on color does not look to drammatically change the curves so I would expect that there is not a relationship between color/cut/carat/price like there is with color/cut/price alone.  It adds little value to the discussion.    
+
+
+### Task 6
+```{r pull in new data frame and look at is structure and summary}
+Inventory <- read_csv("~/R/SummerModule1/RefresherAssignment/RefresherAssignment/InventoryData.csv")
+str(Inventory)
+summary(Inventory)
+```
+With the structure command you can see the basic elements of the dataframe. It shows variable name, type, number of rolws and sample columns. Witht he summary commmand you get an idea of the distribution, if there is any missing data and some of the summary statistics.    
+
+
+
+### Task 7
+```{r create new data frame with only Supplier A info}
+inventoryA <- Inventory %>%
+  filter(Supplier == "A")
+ nrow(inventoryA)
+ 
+```
+There are `r nrow(inventoryA)` rows in the inventoryA data frame.  This is a subset of the Inventory but for only Supplier A.  
+
+
+
+### Task 8
+```{r}
+inventoryA = mutate(inventoryA, OnHandRatio = `On Hand` / `Annual Demand`)
+```
+
+The command [ inventoryA = mutate(inventoryA, OnHandRatio = `On Hand` / `Annual Demand`)]  creates a new column called OnHandRatio by divding the value in On Hand by Annual Demand on a per row basis and puts it in the new column, it then updates that field into the original data frame so that it can be used later.  
+
+
+
+### Task 9
+```{r}
+avg_cost <- inventoryA %>%
+  group_by(`Item SKU`) %>%
+  summarize(SKUAvgCost = mean(`Cost per Unit ($)`))
+
+head(avg_cost)
+```
+I chose to show the first few rows of the new table as proof of the deliverable.
+
+
+### Task 10
+From what I have performed in prior R training I learned the backticks use in several ways that I did not before.  The tasks were generally things I had seen before.  The only thing that gave me a slight headache was pulling in the InventoryData.csv because it didnt recognize its location .  putting a ~ at the from solved that problem, I had never had that one before when I had the data in the same project folder.  
+
